@@ -77,21 +77,7 @@ jobs:
           cache: pip
       - run: pip install -e ".[dev]"
       - name: Run integration tests
-        # tests/integration/ is currently empty by design -- the integration
-        # suite is one of the things students contribute. pytest exits 5 on
-        # "no tests collected", which would fail this job unconditionally and
-        # for a reason unrelated to the PR, so 5 is treated as success here.
-        # Delete this shim once the directory holds at least one test.
-        run: |
-          set +e
-          pytest tests/integration -v --tb=short
-          code=$?
-          set -e
-          if [ "$code" -eq 5 ]; then
-            echo "::notice::No integration tests collected yet - treating as success."
-            exit 0
-          fi
-          exit "$code"
+        run: pytest tests/integration -v --tb=short
         env:
           DATABASE_URL: postgresql://pathreview:pathreview@localhost:5432/pathreview_test
           REDIS_URL: redis://localhost:6379/0
